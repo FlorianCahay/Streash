@@ -11,6 +11,7 @@ public class Addition extends AbstractFonction {
     public Addition() {
         super(2);
     }
+
     /*
         Additionne deux rationnels : a + b
      */

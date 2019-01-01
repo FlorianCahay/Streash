@@ -16,9 +16,14 @@ public class Rationnel implements Valeurs {
     }
 
     public Rationnel(BigInteger numerateur, BigInteger denominateur) {
+        if (denominateur.equals(BigInteger.valueOf(1))) {
+            this.entier = true;
+        } else {
+            this.entier = false;
+        }
         this.numerateur = numerateur;
         this.denominateur = denominateur;
-        this.entier = false;
+
     }
 
     public Rationnel(BigInteger numerateur) {
@@ -28,12 +33,28 @@ public class Rationnel implements Valeurs {
     }
 
     public String affichageDansConsole() {
-        if (entier) {
-            return numerateur.toString();
+        Rationnel x = reductionFraction(this);
+        if (entier || x.getDenominateur().equals(BigInteger.valueOf(1))) {
+            return x.getNumerateur().toString();
         }
         else {
-            return numerateur.toString() + "/" + denominateur.toString();
+            return x.getNumerateur().toString() + "/" + x.getDenominateur().toString();
         }
+    }
+
+    /*
+        Renvoie une fraction irréductible de celle passée en paramètre
+     */
+    private static Rationnel reductionFraction(Rationnel r) {
+        BigInteger pgcd = Rationnel.calculPGCD(r.getNumerateur(), r.getDenominateur());
+        return new Rationnel(r.getNumerateur().divide(pgcd), r.getDenominateur().divide(pgcd));
+    }
+
+    /*
+        Calcul le PGCD de deux BigInteger
+     */
+    private static BigInteger calculPGCD(BigInteger a, BigInteger b) {
+        return a.gcd(b);
     }
 
     @Override
