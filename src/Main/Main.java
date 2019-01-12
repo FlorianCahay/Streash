@@ -1,10 +1,7 @@
-package nompackage;
+package Main;
 
 
 import Console.Console;
-import Types.Rationnel;
-
-import java.math.BigInteger;
 
 public class Main {
 
@@ -22,6 +19,14 @@ public class Main {
 //        Rationnel x = new Rationnel(BigInteger.valueOf(12), BigInteger.valueOf(10));
 //        Rationnel y = Rationnel.reductionFraction(x);
 //        System.out.println(y.affichageDansConsole());
+
+//        String x = "Stream";
+//        String y = "StreamEntierInfini";
+//        if (y.startsWith(x)) {
+//            System.out.println("OK");
+//        } else {
+//            System.out.println("KO");
+//        }
 
 
 

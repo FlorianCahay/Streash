@@ -1,17 +1,24 @@
 package Fonctions.SourcesStreams;
 
-import java.util.stream.Stream;
+import Fonctions.AbstractFonction;
+import Types.Streams.StreamEntierInfiniInverse;
+import Types.TypesDonnees;
 
-public class StreamEntierInverse {
-    private Stream stream;
-    private final int debut;
+import java.util.ArrayList;
 
-    public StreamEntierInverse(int debut) {
-        this.debut = debut;
-        this.stream = Stream.iterate(debut, (x) -> x-1);
+public class StreamEntierInverse extends AbstractFonction {
+    private static final int nombreArgument = 1;
+    private String[] typesArgs = {"Rationnel"};
+
+    public StreamEntierInverse() {
+        super(nombreArgument);
     }
 
-    public Stream getStream() {
-        return stream;
+    @Override
+    public TypesDonnees execution(ArrayList<TypesDonnees> args) {
+        // Vérification du nombre et du type des arguments
+        verifNombreArgument(args);
+        verifTypeArgument(args, typesArgs);
+        return new StreamEntierInfiniInverse().initialisationStream(args);
     }
 }

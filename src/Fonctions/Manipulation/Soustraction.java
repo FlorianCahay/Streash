@@ -2,7 +2,7 @@ package Fonctions.Manipulation;
 
 import Fonctions.AbstractFonction;
 import Types.Rationnel;
-import Types.Valeurs;
+import Types.TypesDonnees;
 
 import java.util.ArrayList;
 
@@ -16,11 +16,10 @@ public class Soustraction extends AbstractFonction {
         Soustrait deux rationnels : a - b
      */
     @Override
-    public Valeurs execution(ArrayList<Valeurs> args) {
-        //Valeurs[] arg = super.getListeArgument();
-        Valeurs a = args.get(0);
-        Valeurs b = args.get(1);
-        if (a instanceof Rationnel && b instanceof Rationnel) {
+    public TypesDonnees execution(ArrayList<TypesDonnees> args) {
+        if (args.get(0) instanceof Rationnel && args.get(1) instanceof Rationnel) {
+            Rationnel a = (Rationnel) args.get(0);
+            Rationnel b = (Rationnel) args.get(1);
             return Rationnel.sub((Rationnel) a,(Rationnel) b);
         }
         else {

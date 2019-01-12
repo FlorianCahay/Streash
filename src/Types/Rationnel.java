@@ -7,14 +7,8 @@ public class Rationnel implements Valeurs {
     private final BigInteger denominateur;
     private final boolean entier;
 
-    public BigInteger getDenominateur() {
-        return denominateur;
-    }
 
-    public BigInteger getNumerateur() {
-        return numerateur;
-    }
-
+//region Constructeurs
     public Rationnel(BigInteger numerateur, BigInteger denominateur) {
         if (denominateur.equals(BigInteger.valueOf(1))) {
             this.entier = true;
@@ -23,7 +17,26 @@ public class Rationnel implements Valeurs {
         }
         this.numerateur = numerateur;
         this.denominateur = denominateur;
+    }
 
+    public Rationnel(int numerateur, int denominateur) {
+        if (denominateur == 1) {
+            this.entier = true;
+        } else {
+            this.entier = false;
+        }
+        this.numerateur = BigInteger.valueOf(numerateur);
+        this.denominateur = BigInteger.valueOf(denominateur);
+    }
+
+    public Rationnel(long numerateur, long denominateur) {
+        if (denominateur == 1) {
+            this.entier = true;
+        } else {
+            this.entier = false;
+        }
+        this.numerateur = BigInteger.valueOf(numerateur);
+        this.denominateur = BigInteger.valueOf(denominateur);
     }
 
     public Rationnel(BigInteger numerateur) {
@@ -32,14 +45,46 @@ public class Rationnel implements Valeurs {
         this.entier = true;
     }
 
+    public Rationnel(int numerateur) {
+        this.numerateur = BigInteger.valueOf(numerateur);
+        this.denominateur = BigInteger.valueOf(1);
+        this.entier = true;
+    }
+
+    public Rationnel(long numerateur) {
+        this.numerateur = BigInteger.valueOf(numerateur);
+        this.denominateur = BigInteger.valueOf(1);
+        this.entier = true;
+    }
+
+//endregion
+
+    public BigInteger getDenominateur() {
+        return denominateur;
+    }
+
+    public BigInteger getNumerateur() {
+        return numerateur;
+    }
+
+    public boolean isEntier() {
+        return entier;
+    }
+
+    @Override
     public String affichageDansConsole() {
         Rationnel x = reductionFraction(this);
         if (entier || x.getDenominateur().equals(BigInteger.valueOf(1))) {
             return x.getNumerateur().toString();
         }
         else {
-            return x.getNumerateur().toString() + "/" + x.getDenominateur().toString();
+            return x.getNumerateur().toString() + "/" + x.getDenominateur().toString() + " ~= " + calculValeurApprochee(x);
         }
+    }
+
+    @Override
+    public String getType() {
+        return "Rationnel";
     }
 
     /*
@@ -50,16 +95,15 @@ public class Rationnel implements Valeurs {
         return new Rationnel(r.getNumerateur().divide(pgcd), r.getDenominateur().divide(pgcd));
     }
 
+    private float calculValeurApprochee(Rationnel x) {
+        return x.getNumerateur().floatValue()/x.getDenominateur().floatValue();
+    }
+
     /*
         Calcul le PGCD de deux BigInteger
      */
     private static BigInteger calculPGCD(BigInteger a, BigInteger b) {
         return a.gcd(b);
-    }
-
-    @Override
-    public String getType() {
-        return "Rationnel";
     }
 
     /*

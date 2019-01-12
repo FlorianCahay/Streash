@@ -1,33 +1,56 @@
 package Fonctions;
 
+import Types.StreamType;
+import Types.TypesDonnees;
 import Types.Valeurs;
-import com.sun.jdi.Value;
 
 import java.util.ArrayList;
 
 public abstract class AbstractFonction implements Fonctions {
     private final int nbreArgument;
-    private ArrayList<Valeurs> listeArgument;
+    private ArrayList<TypesDonnees> listeArgument;
 
     public AbstractFonction(int nbreArgument) {
         this.nbreArgument = nbreArgument;
-        this.listeArgument = new ArrayList<Valeurs>();
+        this.listeArgument = new ArrayList<TypesDonnees>();
     }
 
     public void typeArgumentsNonValide() {
         throw new IllegalArgumentException("Les arguments ne sont pas du même type.");
     }
 
-    @Override
-    public Valeurs execution(ArrayList<Valeurs> arg) {
-        return null;
+    public boolean verifNombreArgument(ArrayList<TypesDonnees> args) {
+        if (args.size() < nbreArgument) {
+            throw new IllegalArgumentException("Il n'y a pas assez d'argument");
+        } else if (args.size() > nbreArgument){
+            throw new IllegalArgumentException("Il y a trop d'argument");
+        }
+        return true;
     }
 
-    public Valeurs[] getListeArgument() {
-        Valeurs[] tableau = new Valeurs[nbreArgument];
-        for (int i = 0; i < tableau.length; i++) {
-            tableau[i] = listeArgument.get(i);
+    /*
+        Lève une exception si un argument est de mauvais type
+     */
+    public void verifTypeArgument(ArrayList<TypesDonnees> args, String[] types) {
+        // Initialisation du message d'erreur
+        StringBuilder sb = new StringBuilder("Un/Des argument(s) passé(s) en paramètre est/sont de mauvais type :\n");
+
+        for (int i = 0; i < nbreArgument; i++) {
+            // Si le type attendu est un stream
+            if (types[i].equals("Stream")) {
+                if (!args.get(i).getType().startsWith("Stream")) {
+                    sb.append("\trecu=" + args.get(i).getType() + " attendu=" + types[i] + ",");
+                }
+            }
+            else if (!args.get(i).getType().equals(types[i])) {
+                sb.append("\trecu=" + args.get(i).getType() + " attendu=" + types[i] + ",");
+            }
         }
-        return tableau;
+        // Si un argument est du mauvais type on lève une exception
+        if (!sb.toString().equals("Un/Des argument(s) passé(s) en paramètre est/sont de mauvais type :\n")) {
+            throw new IllegalArgumentException(sb.toString());
+        }
     }
+
+
 }

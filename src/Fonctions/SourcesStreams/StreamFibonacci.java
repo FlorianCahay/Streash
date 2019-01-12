@@ -1,18 +1,25 @@
 package Fonctions.SourcesStreams;
 
-import java.util.stream.Stream;
+import Fonctions.AbstractFonction;
+import Types.Streams.StreamNombresFibonacci;
+import Types.TypesDonnees;
 
-public class StreamFibonacci {
-    private Stream stream;
-    //private final int debut;
+import java.util.ArrayList;
 
-    public StreamFibonacci(int a, int b) {
+public class StreamFibonacci extends AbstractFonction {
+    private static final int nombreArgument = 3;
+    private String[] typesArgs = {"Rationnel", "Rationnel", "Rationnel"};
 
-        this.stream = Stream.iterate(new long[]{a, b}, p -> new long[]{p[1], p[0]+p[1]});
+    public StreamFibonacci() {
+        super(nombreArgument);
     }
 
-    public Stream getStream() {
-        return stream;
-    }
+    @Override
+    public TypesDonnees execution(ArrayList<TypesDonnees> args) {
+        // Vérification du nombre et du type des arguments
+        verifNombreArgument(args);
+        verifTypeArgument(args, typesArgs);
 
+        return new StreamNombresFibonacci().initialisationStream(args);
+    }
 }
