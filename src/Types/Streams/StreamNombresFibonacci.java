@@ -11,6 +11,7 @@ public class StreamNombresFibonacci implements StreamType {
     private int premier;
     private int deuxieme;
     private boolean infini;
+    private Stream s = null;
 
     public StreamNombresFibonacci() {
 
@@ -23,8 +24,16 @@ public class StreamNombresFibonacci implements StreamType {
     }
 
     @Override
+    public StreamType copier() {
+        return new StreamNombresFibonacci(this.premier, this.deuxieme);
+    }
+
+    @Override
     public Stream getStream() {
-        return Stream.iterate(new long[]{premier, deuxieme}, p -> new long[]{p[1], p[0]+p[1]});
+        if (s == null) {
+            s = Stream.iterate(new long[]{premier, deuxieme}, p -> new long[]{p[1], p[0]+p[1]});
+        }
+        return s;
     }
 
     @Override

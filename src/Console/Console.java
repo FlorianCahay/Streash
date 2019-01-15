@@ -4,7 +4,6 @@ import Fonctions.Fonctions;
 import Types.Rationnel;
 import Types.StreamType;
 import Types.TypesDonnees;
-import Types.Valeurs;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -23,55 +22,63 @@ public class Console {
         this.variables = new TreeMap<String, Entry<TypesDonnees, Deque<String>>>();
     }
 
-    public Deque<String> getPile() {
-        return pile;
-    }
-
+    /*
+        Boucle principale du programme, la boucle lit la console
+     */
     public void boucle() {
         while(true) {
-            if (scanner.hasNextLine()) {
-                pile = new ArrayDeque<>();
-                String ligne = scanner.nextLine();
+            try {
+                if (scanner.hasNextLine()) {
+                    pile = new ArrayDeque<>();
+                    String ligne = scanner.nextLine();
 
-                this.arguments = ligne.split(" ");
-                if (arguments[0].contains("=")) {
-                    System.out.println("Merci de mettre des espaces autour du égal");
-                    continue;
-                }
+                    this.arguments = ligne.split(" ");
+                    if (arguments[0].contains("=")) {
+                        throw new IllegalArgumentException("Merci de mettre des espaces autour du égal");
+                    }
 
-                if (ligne.startsWith("/")) {
-                    // Exécution d'une méta-instruction
-                    analyseMetaInstruction();
+                    if (ligne.startsWith("/")) {
+                        // Exécution d'une méta-instruction
+                        analyseMetaInstruction();
+                    } else if (ligne.contains("=")) {
+                        // Enregistrement de la ligne avec affectation d'une variable définie
+                        String resultat = constructionPile();
+                        String v = ajoutVariable(resultat);
+                        afficheUneVariable(v);
+                    } else {
+                        // Enregistrement de la ligne avec affectation d'une variable temporaire
+                        String resultat = constructionPileTemporaire();
+                        String v = ajoutVariableTemporaire(resultat);
+                        afficheUneVariable(v);
+                    }
                 }
-                else if (ligne.contains("=")) {
-                    // Enregistrement de la ligne avec affectation d'une variable définie
-                    String resultat = constructionPile();
-                    String v = ajoutVariable(resultat);
-                    afficheUneVariable(v);
-                }
-                else {
-                    // Enregistrement de la ligne avec affectation d'une variable temporaire
-                    String resultat = constructionPileTemporaire();
-                    String v = ajoutVariableTemporaire(resultat);
-                    afficheUneVariable(v);
-                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////
-    // AJOUTER VERIF DES ARGUMENTS DANS LA CONSOLE (NOMBRE? TYPE?)
-    ///////////////////////////////////////////////////////////////////////
-
+    /*
+        Ajoute dans la map des variables une nouvelle variable définie par un nom
+     */
     private String ajoutVariable(String resultat) {
+        Rationnel r = new Rationnel(BigInteger.valueOf(1));
         if (resultat != null) {
-            variables.put(arguments[0], new SimpleEntry(new Rationnel(new BigInteger(resultat)), pile));
+            if (resultat.matches("-?\\d+/-?\\d+")) {
+                String[] resultat_split = resultat.split("/");
+                r = new Rationnel(new BigInteger(resultat_split[0]), new BigInteger(resultat_split[1]));
+            } else {
+                r = new Rationnel(new BigInteger(resultat));
+            }
+            variables.put(arguments[0], new SimpleEntry(r, pile));
         } else {
-            variables.put(arguments[0], new SimpleEntry(new Rationnel(BigInteger.valueOf(1)), pile));
+            variables.put(arguments[0], new SimpleEntry(r, pile));
         }
         return arguments[0];
     }
-
+    /*
+        Ajoute dans la map des variables une nouvelle variable temporaire
+     */
     private String ajoutVariableTemporaire(String resultat) {
         int i = 1;
         String nomVariable = "";
@@ -84,14 +91,25 @@ public class Console {
                 break;
             }
         }
+        Rationnel r = new Rationnel(BigInteger.valueOf(1));
         if (resultat != null) {
-            variables.put(nomVariable, new SimpleEntry(new Rationnel(new BigInteger(resultat)), pile));
+            if (resultat.matches("-?\\d+/-?\\d+")) {
+                String[] resultat_split = resultat.split("/");
+                r = new Rationnel(new BigInteger(resultat_split[0]), new BigInteger(resultat_split[1]));
+            } else {
+                r = new Rationnel(new BigInteger(resultat));
+            }
+            variables.put(nomVariable, new SimpleEntry(r, pile));
         } else {
-            variables.put(nomVariable, new SimpleEntry(new Rationnel(BigInteger.valueOf(1)), pile));
+            variables.put(nomVariable, new SimpleEntry(r, pile));
         }
         return nomVariable;
     }
 
+    /*
+        Construit une pile d'instructions avec la ligne rentrée par l'utilisateur
+        Renvoie la valeur de la variable si elle ne contient qu'un rationnel
+     */
     private String constructionPile() {
         for (String action : arguments) {
             // On n'insère pas le nom de la variable ni le = dans la pile
@@ -104,6 +122,10 @@ public class Console {
         return arguments.length == 3 ? arguments[2] : null;
     }
 
+    /*
+        Construit une pile d'instructions avec la ligne rentrée par l'utilisateur
+        Renvoie la valeur de la variable si elle ne contient qu'un rationnel
+     */
     private String constructionPileTemporaire() {
         for (String action : arguments) {
             pile.addLast(action);
@@ -124,8 +146,18 @@ public class Console {
         while (pileAExecuter.size() > 0) {
             String element = pileAExecuter.removeFirst();
             // Si c'est un nombre on l'ajoute à la liste d'arguments
-            if (element.matches("\\d+")) {
+            if (element.matches("-?\\d+")) {
                 arg.add(new Rationnel(new BigInteger(element)));
+            }
+            else if (element.matches("-?\\d+/-?\\d+")) {
+                String[] resultat_split = element.split("/");
+                arg.add(new Rationnel(new BigInteger(resultat_split[0]), new BigInteger(resultat_split[1])));
+            }
+            // Si on fait appel à une variable déjà enregistrée
+            else if (variables.containsKey(element)) {
+                Entry<TypesDonnees, Deque<String>> contenuVariable = variables.get(element);
+                // On ajoute la valeur de la variable à la liste des arguments
+                arg.add(contenuVariable.getKey());
             }
             // Si c'est un appel à une fonction
             else if (element.matches("<.*>")) {
@@ -134,23 +166,27 @@ public class Console {
 
                 // On exécute la fonction avec les arguments
                 TypesDonnees x = fonction_correspondante.execution(arg);
+                if (!element.matches("<print>")) {
+                    if (pileAExecuter.size() < 1) {
+                        // On affiche le contenu de la variable dans la console
+                        System.out.println(nomVariable + " = " + x.affichageDansConsole());
+                    }
+                    // On met à jour la valeur dans la map
+                    variables.replace(nomVariable, new SimpleEntry(x, new ArrayDeque(liste_copie)));
 
-                if (pileAExecuter.size() < 1) {
-                    // On affiche le contenu de la variable dans la console
-                    System.out.println(nomVariable + " = " + x.affichageDansConsole());
+                    // On réinitialise la liste des arguments et on ajoute le résultat de la fonction
+                    arg = new ArrayList<TypesDonnees>();
+                    arg.add(x);
                 }
-                // On met à jour la valeur dans la map
-                variables.replace(nomVariable, new SimpleEntry(x, new ArrayDeque(liste_copie)));
-
-                // On réinitialise la liste des arguments et on ajoute le résultat de la fonction
-                arg = new ArrayList<TypesDonnees>();
-                arg.add(x);
+                else {
+                    System.out.println("Nombre d'éléments affichés : " + x.affichageDansConsole());
+                }
             }
         }
     }
 
     /*
-        Analyse l'instruction tapé par l'utilisateur et appelle les méthodes qui correspondent
+        Analyse la meta-instruction tapé par l'utilisateur et appelle la méthode qui correspondante
      */
     private void analyseMetaInstruction() {
         if (arguments[0].equals("/quit") && arguments.length <= 1) {
@@ -165,19 +201,21 @@ public class Console {
             }
             else if (arguments.length == 2 && arguments[1].equals("alpha")) {
                 System.out.println("Affichage de toutes les variables par ordre lexicographique de leur nom");
+                for (String variable : variables.keySet()) {
+                    afficheUneVariable(variable);
+                }
             }
             else {
-                System.out.println("Nombre d'argument incorrect");
+                throw new IllegalArgumentException("Nombre d'argument incorrect");
             }
 
         }
         else if (arguments[0].equals("/printvar")) {
             if (arguments.length == 2) {
-                System.out.println("Affichage d'une variable");
                 afficheUneVariable(arguments[1]);
             }
             else {
-                System.out.println("Nombre d'argument incorrect");
+                throw new IllegalArgumentException("Nombre d'argument incorrect");
             }
         }
     }
@@ -204,6 +242,9 @@ public class Console {
             else {
                 executionPile(contenuVariable.getValue(), variable);
             }
+        }
+        else {
+            throw new IllegalArgumentException("Variable non existante");
         }
     }
 

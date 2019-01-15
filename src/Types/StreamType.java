@@ -9,5 +9,6 @@ public interface StreamType extends TypesDonnees {
     StreamType getObject();
     boolean streamInfini();
     Stream getStream();
+    StreamType copier();
 
 }

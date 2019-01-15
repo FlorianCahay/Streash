@@ -34,6 +34,6 @@ public class Longueur extends AbstractFonction {
         // Récupération de l'objet
         StreamType x = st.getObject();
 
-        return x.getStream();
+        return x.copier().getStream();
     }
 }

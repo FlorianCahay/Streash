@@ -30,11 +30,11 @@ public class Produit extends AbstractFonction {
 
     private Stream constructionStream(StreamType st) {
         if (st.streamInfini()) {
-            throw new IllegalArgumentException("Le stream est infini, impossible de calculer la somme de ses elements");
+            throw new IllegalArgumentException("Le stream est infini, impossible de calculer le produit de ses elements");
         }
         // Récupération de l'objet
         StreamType x = st.getObject();
 
-        return x.getStream();
+        return x.copier().getStream();
     }
 }

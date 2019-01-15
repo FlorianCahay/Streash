@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 public class StreamEntierInfiniInverse implements StreamType {
     private int debut;
     private boolean infini;
+    private Stream s = null;
 
     public StreamEntierInfiniInverse() {
 
@@ -22,8 +23,16 @@ public class StreamEntierInfiniInverse implements StreamType {
     }
 
     @Override
+    public StreamType copier() {
+        return new StreamEntierInfiniInverse(this.debut);
+    }
+
+    @Override
     public Stream getStream() {
-        return Stream.iterate(debut, n -> n - 1).map(i -> new Rationnel(BigInteger.valueOf(i)));
+        if (s == null) {
+            s = Stream.iterate(debut, n -> n - 1).map(i -> new Rationnel(BigInteger.valueOf(i)));
+        }
+        return s;
     }
 
     @Override
@@ -38,7 +47,7 @@ public class StreamEntierInfiniInverse implements StreamType {
 
     @Override
     public String affichageDansConsole() {
-        return "Stream d'entiers de " + String.valueOf(debut) + " jusqu'à moins l'infini.";
+        return "Stream d'entiers de " + String.valueOf(debut) + " jusqu'à moins l'infini";
     }
 
     @Override

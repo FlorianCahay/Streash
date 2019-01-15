@@ -6,13 +6,15 @@ import Types.StreamType;
 import Types.TypesDonnees;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-public class Somme extends AbstractFonction {
+public class Affichage extends AbstractFonction {
     private static final int nombreArgument = 1;
     private String[] typesArgs = {"Stream"};
 
-    public Somme() {
+    public Affichage() {
         super(nombreArgument);
     }
 
@@ -22,19 +24,20 @@ public class Somme extends AbstractFonction {
         verifNombreArgument(args);
         verifTypeArgument(args, typesArgs);
 
-        Stream s = constructionStream((StreamType) args.get(0));
-        Rationnel somme = (Rationnel) s.map(x -> (Rationnel)x).reduce(new Rationnel(0), (x, y) -> Rationnel.add((Rationnel)x, (Rationnel)y));
-
-        return somme;
+        StreamType st = constructionStream((StreamType) args.get(0));
+        Stream s = st.getStream();
+        s.forEach(System.out::println);
+        s = st.copier().getStream();
+        return new Rationnel(s.count());
     }
 
-    private Stream constructionStream(StreamType st) {
+    private StreamType constructionStream(StreamType st) {
         if (st.streamInfini()) {
-            throw new IllegalArgumentException("Le stream est infini, impossible de calculer la somme de ses elements");
+            throw new IllegalArgumentException("Le stream est infini, impossible de connaître sa taille");
         }
         // Récupération de l'objet
         StreamType x = st.getObject();
 
-        return x.copier().getStream();
+        return x.copier();
     }
 }

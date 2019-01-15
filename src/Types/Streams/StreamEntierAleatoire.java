@@ -14,6 +14,7 @@ public class StreamEntierAleatoire implements StreamType {
     private long mini;
     private long maxi;
     private boolean infini;
+    private Stream s = null;
 
     public StreamEntierAleatoire() {
 
@@ -30,8 +31,16 @@ public class StreamEntierAleatoire implements StreamType {
     }
 
     @Override
+    public StreamType copier() {
+        return new StreamEntierAleatoire(new Rationnel(this.mini), new Rationnel(this.maxi), new Rationnel(this.seed));
+    }
+
+    @Override
     public Stream getStream() {
-        return new Random(this.seed).ints((int) mini, (int) maxi).mapToObj(x -> new Rationnel(BigInteger.valueOf(x)));
+        if (s == null) {
+            s = new Random(this.seed).ints((int) mini, (int) maxi+1).mapToObj(x -> new Rationnel(BigInteger.valueOf(x)));
+        }
+        return s;
     }
 
     @Override

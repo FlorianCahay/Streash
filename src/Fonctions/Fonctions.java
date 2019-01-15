@@ -41,21 +41,21 @@ public interface Fonctions {
         if (nom.equals("<slice>")) {
             return new Slice();
         }
-//        if (nom.equals("<repeat>")) {
-//            return new Repetition();
-//        }
-//        if (nom.equals("<concat>")) {
-//            return new Concatenation();
-//        }
-//        if (nom.equals("<inter>")) {
-//            return new Intersection();
-//        }
-//        if (nom.equals("<sorted>")) {
-//            return new Trier();
-//        }
-//        if (nom.equals("<shuffle>")) {
-//            return new Melanger();
-//        }
+        if (nom.equals("<repeat>")) {
+            return new Repetition();
+        }
+        if (nom.equals("<concat>")) {
+            return new Concatenation();
+        }
+        if (nom.equals("<inter>")) {
+            return new Intersection();
+        }
+        if (nom.equals("<sorted>")) {
+            return new Trier();
+        }
+        if (nom.equals("<shuffle>")) {
+            return new Melanger();
+        }
         // Puits
         if (nom.equals("<len>")) {
             return new Longueur();
@@ -66,18 +66,21 @@ public interface Fonctions {
         if (nom.equals("<product>")) {
             return new Produit();
         }
-//        if (nom.equals("<average>")) {
-//            return new Moyenne();
-//        }
-//        if (nom.equals("<max>")) {
-//            return new Maximum();
-//        }
-//        if (nom.equals("<min>")) {
-//            return new Minimum();
-//        }
-//        if (nom.equals("<get>")) {
-//            return new ObtenirElement();
-//        }
+        if (nom.equals("<average>")) {
+            return new Moyenne();
+        }
+        if (nom.equals("<max>")) {
+            return new Maximum();
+        }
+        if (nom.equals("<min>")) {
+            return new Minimum();
+        }
+        if (nom.equals("<get>")) {
+            return new ObtenirElement();
+        }
+        if (nom.equals("<print>")) {
+            return new Affichage();
+        }
         throw new IllegalArgumentException("Nom de fonction non valide");
     }
 

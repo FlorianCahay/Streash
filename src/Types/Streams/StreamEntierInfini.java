@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 public class StreamEntierInfini implements StreamType {
     private int debut;
     private boolean infini;
+    private Stream s = null;
 
     public StreamEntierInfini() {
 
@@ -22,8 +23,16 @@ public class StreamEntierInfini implements StreamType {
     }
 
     @Override
+    public StreamType copier() {
+        return new StreamEntierInfini(this.debut);
+    }
+
+    @Override
     public Stream getStream() {
-        return Stream.iterate(debut, n -> n + 1).map(i -> new Rationnel(BigInteger.valueOf(i)));
+        if (s == null) {
+            s = Stream.iterate(debut, n -> n + 1).map(i -> new Rationnel(BigInteger.valueOf(i)));
+        }
+        return s;
     }
 
     @Override

@@ -2,13 +2,11 @@ package Types;
 
 import java.math.BigInteger;
 
-public class Rationnel implements Valeurs {
+public class Rationnel implements Valeurs, Comparable<Rationnel> {
     private final BigInteger numerateur;
     private final BigInteger denominateur;
     private final boolean entier;
 
-
-//region Constructeurs
     public Rationnel(BigInteger numerateur, BigInteger denominateur) {
         if (denominateur.equals(BigInteger.valueOf(1))) {
             this.entier = true;
@@ -57,7 +55,32 @@ public class Rationnel implements Valeurs {
         this.entier = true;
     }
 
-//endregion
+    @Override
+    public String toString() {
+        return affichageDansConsole();
+    }
+
+    @Override
+    public int compareTo(Rationnel r) {
+        if (r == null) return 1;
+        int comparaisonNumerateur = this.numerateur.compareTo(r.getNumerateur());
+        int comparaisonDenominateur = this.denominateur.compareTo(r.getDenominateur());
+        if (comparaisonNumerateur < 0) return -1;
+        else if (comparaisonNumerateur > 0) return 1;
+        if (comparaisonDenominateur < 0) return -1;
+        else if (comparaisonDenominateur > 0) return 1;
+        return 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+
+        if (!getClass().equals(o.getClass())) return false;
+        Rationnel r = (Rationnel)o ;
+        return numerateur.equals(r.getNumerateur()) && denominateur.equals(r.getDenominateur());
+    }
 
     public BigInteger getDenominateur() {
         return denominateur;
@@ -73,7 +96,7 @@ public class Rationnel implements Valeurs {
 
     @Override
     public String affichageDansConsole() {
-        Rationnel x = reductionFraction(this);
+        Rationnel x = this;//reductionFraction(this);
         if (entier || x.getDenominateur().equals(BigInteger.valueOf(1))) {
             return x.getNumerateur().toString();
         }
@@ -95,7 +118,10 @@ public class Rationnel implements Valeurs {
         return new Rationnel(r.getNumerateur().divide(pgcd), r.getDenominateur().divide(pgcd));
     }
 
-    private float calculValeurApprochee(Rationnel x) {
+    /*
+        Renvoie une valeur approchée du rationnel passé en paramètre
+     */
+    public static float calculValeurApprochee(Rationnel x) {
         return x.getNumerateur().floatValue()/x.getDenominateur().floatValue();
     }
 
